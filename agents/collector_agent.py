@@ -123,7 +123,7 @@ class CollectorAgent:
             freecrypto = data_sources.get("freecryptoapi", {})
             endpoints = freecrypto.get("endpoints", {})
             coin_list = endpoints.get("coins", [])
-            
+
             for coin in coin_list:
                 if isinstance(coin, dict):
                     coins.append(coin.get("symbol"))
