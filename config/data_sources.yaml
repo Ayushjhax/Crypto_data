@@ -1,0 +1,42 @@
+# Data Sources Configuration
+# INTERVIEW EXPLANATION: YAML files are great for configuration because:
+# 1. Human-readable and easy to edit
+# 2. Supports nested structures
+# 3. No code changes needed to modify data sources
+# 4. Version control friendly
+
+data_sources:
+  freecryptoapi:
+    name: "FreeCryptoAPI"
+    base_url: "https://api.freecryptoapi.com/v1"
+    endpoints:
+      # Popular cryptocurrencies to collect
+      coins:
+        - symbol: "BTC"
+          name: "Bitcoin"
+        - symbol: "ETH"
+          name: "Ethereum"
+        - symbol: "BNB"
+          name: "Binance Coin"
+        - symbol: "SOL"
+          name: "Solana"
+        - symbol: "ADA"
+          name: "Cardano"
+        - symbol: "XRP"
+          name: "Ripple"
+        - symbol: "DOGE"
+          name: "Dogecoin"
+        - symbol: "DOT"
+          name: "Polkadot"
+    
+    # Rate limiting configuration
+    rate_limit:
+      requests_per_minute: 60
+      requests_per_hour: 1000
+    
+    # Data collection parameters
+    collection_params:
+      include_metadata: true
+      include_history: false  # Set to true for historical data
+      data_points_per_request: 100
+
