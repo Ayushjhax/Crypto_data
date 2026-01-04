@@ -40,11 +40,15 @@ CLEANED_DATA_DIR = BASE_DIR / os.getenv("CLEANED_DATA_DIR", "data/cleaned")
 LABELED_DATA_DIR = BASE_DIR / os.getenv("LABELED_DATA_DIR", "data/labeled")
 QUALITY_REPORTS_DIR = BASE_DIR / "data/quality_reports"
 
+# Database Configuration
+EVALUATION_DB_PATH = BASE_DIR / os.getenv("EVALUATION_DB_PATH", "data/evaluations.db")
+
 # Create directories if they don't exist
 RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
 CLEANED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 LABELED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 QUALITY_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+# Database file will be created automatically by DatabaseManager
 
 # Validation
 if not FREECRYPTO_API_KEY:

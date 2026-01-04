@@ -25,6 +25,7 @@ sys.path.insert(0, str(project_root))
 from agents.collector_agent import CollectorAgent
 from agents.cleaner_agent import CleanerAgent
 from agents.labeler_agent import LabelerAgent
+from agents.evaluator_agent import EvaluatorAgent
 from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -39,12 +40,14 @@ def main():
     1. Data Collection (Phase 1)
     2. Data Cleaning (Phase 2)
     3. Data Labeling (Phase 3)
+    4. Data Evaluation (Phase 4) - Critic Agent
     
-    This demonstrates a complete ETL (Extract, Transform, Load) pipeline.
+    This demonstrates a complete ETL (Extract, Transform, Load) pipeline
+    with quality evaluation using a critic agent pattern.
     """
     logger.info("=" * 60)
     logger.info("DonutAI - Complete Crypto Data Pipeline")
-    logger.info("Phase 1: Collection → Phase 2: Cleaning → Phase 3: Labeling")
+    logger.info("Phase 1: Collection → Phase 2: Cleaning → Phase 3: Labeling → Phase 4: Evaluation")
     logger.info("=" * 60)
     
     try:
@@ -95,6 +98,32 @@ def main():
         print(f"✅ Phase 3 Complete: Labeled {len(labeled_data)} records")
         
         # ============================================================
+        # PHASE 4: DATA EVALUATION (Critic Agent)
+        # ============================================================
+        logger.info("\n" + "=" * 60)
+        logger.info("PHASE 4: DATA EVALUATION (Critic Agent)")
+        logger.info("=" * 60)
+        
+        evaluator_agent = EvaluatorAgent()
+        evaluation_results = evaluator_agent.evaluate_all_pipeline_outputs()
+        
+        collector_evals = len(evaluation_results.get('collector_evaluations', []))
+        cleaner_evals = len(evaluation_results.get('cleaner_evaluations', []))
+        labeler_evals = len(evaluation_results.get('labeler_evaluations', []))
+        
+        # Get stats before closing (needed for final summary)
+        evaluator_stats = evaluator_agent.get_stats()
+        
+        print(f"✅ Phase 4 Complete: Evaluated pipeline outputs")
+        print(f"  - Collector evaluations: {collector_evals}")
+        print(f"  - Cleaner evaluations: {cleaner_evals}")
+        print(f"  - Labeler evaluations: {labeler_evals}")
+        print(f"  - Evaluation data saved to: data/evaluations.db")
+        
+        # Close database connection
+        evaluator_agent.close()
+        
+        # ============================================================
         # FINAL SUMMARY
         # ============================================================
         print("\n" + "=" * 60)
@@ -114,6 +143,13 @@ def main():
         labeler_stats = labeler_agent.get_stats()
         print(f"  - Labeled: {labeler_stats['records_labeled']} records")
         print(f"  - Data saved to: data/labeled/")
+        
+        print(f"\nPhase 4 - Evaluation (Critic Agent):")
+        print(f"  - Evaluations performed: {evaluator_stats.get('evaluations_performed', 0)}")
+        print(f"  - High quality: {evaluator_stats.get('high_quality_count', 0)}")
+        print(f"  - Medium quality: {evaluator_stats.get('medium_quality_count', 0)}")
+        print(f"  - Low quality: {evaluator_stats.get('low_quality_count', 0)}")
+        print(f"  - Evaluation database: data/evaluations.db")
         
         print("\n" + "=" * 60)
         
