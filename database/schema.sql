@@ -74,3 +74,94 @@ CREATE INDEX IF NOT EXISTS idx_evaluations_symbol ON evaluations(symbol);
 CREATE INDEX IF NOT EXISTS idx_evaluation_summary_date ON evaluation_summary(summary_date);
 CREATE INDEX IF NOT EXISTS idx_evaluation_summary_agent ON evaluation_summary(agent_type, summary_date);
 
+-- ============================================================
+-- PRODUCT ANALYTICS TABLES
+-- ============================================================
+-- INTERVIEW EXPLANATION:
+-- These tables track user interactions and pipeline usage
+-- for product analytics (DAU, conversion, funnel, retention)
+-- as mentioned in product analytics job descriptions
+
+-- Analytics events table: Track all user actions/events
+CREATE TABLE IF NOT EXISTS analytics_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_name VARCHAR(100) NOT NULL,  -- 'pipeline_start', 'collection_complete', etc.
+    user_id VARCHAR(100) DEFAULT 'default_user',  -- Optional: track different users
+    session_id VARCHAR(100) NOT NULL,  -- Track pipeline run sessions
+    properties TEXT,                    -- JSON properties for the event
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Analytics sessions table: Track pipeline runs
+CREATE TABLE IF NOT EXISTS analytics_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id VARCHAR(100) UNIQUE NOT NULL,
+    user_id VARCHAR(100) DEFAULT 'default_user',
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'active',  -- 'active', 'completed', 'failed'
+    
+    -- Funnel tracking
+    collection_completed BOOLEAN DEFAULT 0,
+    cleaning_completed BOOLEAN DEFAULT 0,
+    labeling_completed BOOLEAN DEFAULT 0,
+    evaluation_completed BOOLEAN DEFAULT 0,
+    
+    -- Metadata
+    coins_collected INTEGER DEFAULT 0,
+    coins_cleaned INTEGER DEFAULT 0,
+    coins_labeled INTEGER DEFAULT 0
+);
+
+-- Indexes for analytics tables (make queries faster)
+CREATE INDEX IF NOT EXISTS idx_analytics_events_name ON analytics_events(event_name);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_timestamp ON analytics_events(timestamp);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_session ON analytics_events(session_id);
+CREATE INDEX IF NOT EXISTS idx_analytics_sessions_started ON analytics_sessions(started_at);
+CREATE INDEX IF NOT EXISTS idx_analytics_sessions_status ON analytics_sessions(status);
+
+-- ============================================================
+-- ANOMALY DETECTION TABLES
+-- ============================================================
+-- INTERVIEW EXPLANATION:
+-- These tables store detected anomalies for tracking and analysis.
+-- Allows teams to track which anomalies were resolved, etc.
+
+-- Anomalies table: Stores detected anomalies
+CREATE TABLE IF NOT EXISTS anomalies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_type VARCHAR(50) NOT NULL,  -- 'collector', 'cleaner', 'labeler'
+    detection_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Anomaly details
+    anomaly_type VARCHAR(50),  -- 'threshold', 'statistical', 'rate_of_change'
+    severity VARCHAR(20),  -- 'low', 'medium', 'high'
+    
+    -- Metrics
+    current_value FLOAT,
+    threshold_value FLOAT,
+    historical_avg FLOAT,
+    historical_std FLOAT,
+    z_score FLOAT,
+    
+    -- Message and details (JSON)
+    message TEXT,
+    anomaly_details TEXT,  -- JSON with full anomaly data
+    
+    -- Status
+    status VARCHAR(20) DEFAULT 'new',  -- 'new', 'acknowledged', 'resolved', 'false_positive'
+    acknowledged_by VARCHAR(100),
+    acknowledged_at TIMESTAMP,
+    resolved_at TIMESTAMP,
+    
+    -- Metadata
+    check_run_id VARCHAR(100)  -- Groups anomalies from same check run
+);
+
+-- Indexes for anomaly queries
+CREATE INDEX IF NOT EXISTS idx_anomalies_agent_type ON anomalies(agent_type);
+CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(detection_timestamp);
+CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity);
+CREATE INDEX IF NOT EXISTS idx_anomalies_status ON anomalies(status);
+CREATE INDEX IF NOT EXISTS idx_anomalies_check_run ON anomalies(check_run_id);
+

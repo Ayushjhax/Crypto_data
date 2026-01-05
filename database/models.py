@@ -199,6 +199,62 @@ class PipelineRun(Base):
         }
 
 
+class Anomaly(Base):
+    """
+    Model representing a detected anomaly.
+    
+    INTERVIEW EXPLANATION:
+    Stores anomaly records for tracking and analysis.
+    Allows teams to track which anomalies were resolved, etc.
+    """
+    __tablename__ = 'anomalies'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    agent_type = Column(String(50), nullable=False)
+    detection_timestamp = Column(DateTime, default=datetime.now)
+    
+    anomaly_type = Column(String(50))
+    severity = Column(String(20))
+    
+    current_value = Column(Float)
+    threshold_value = Column(Float)
+    historical_avg = Column(Float)
+    historical_std = Column(Float)
+    z_score = Column(Float)
+    
+    message = Column(Text)
+    anomaly_details = Column(Text)  # JSON
+    
+    status = Column(String(20), default='new')
+    acknowledged_by = Column(String(100))
+    acknowledged_at = Column(DateTime)
+    resolved_at = Column(DateTime)
+    
+    check_run_id = Column(String(100))
+    
+    def to_dict(self):
+        """Convert anomaly to dictionary."""
+        return {
+            'id': self.id,
+            'agent_type': self.agent_type,
+            'detection_timestamp': self.detection_timestamp.isoformat() if self.detection_timestamp else None,
+            'anomaly_type': self.anomaly_type,
+            'severity': self.severity,
+            'current_value': self.current_value,
+            'threshold_value': self.threshold_value,
+            'historical_avg': self.historical_avg,
+            'historical_std': self.historical_std,
+            'z_score': self.z_score,
+            'message': self.message,
+            'anomaly_details': json.loads(self.anomaly_details) if self.anomaly_details else None,
+            'status': self.status,
+            'acknowledged_by': self.acknowledged_by,
+            'acknowledged_at': self.acknowledged_at.isoformat() if self.acknowledged_at else None,
+            'resolved_at': self.resolved_at.isoformat() if self.resolved_at else None,
+            'check_run_id': self.check_run_id
+        }
+
+
 class DatabaseManager:
     """
     Manages database connections and operations.

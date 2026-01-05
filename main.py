@@ -26,6 +26,8 @@ from agents.collector_agent import CollectorAgent
 from agents.cleaner_agent import CleanerAgent
 from agents.labeler_agent import LabelerAgent
 from agents.evaluator_agent import EvaluatorAgent
+from agents.anomaly_agent import AnomalyAgent
+from analytics.event_tracker import EventTracker
 from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -41,16 +43,23 @@ def main():
     2. Data Cleaning (Phase 2)
     3. Data Labeling (Phase 3)
     4. Data Evaluation (Phase 4) - Critic Agent
+    5. Anomaly Detection (Phase 5) - Monitor metrics for anomalies
     
     This demonstrates a complete ETL (Extract, Transform, Load) pipeline
-    with quality evaluation using a critic agent pattern.
+    with quality evaluation and anomaly detection using agent patterns.
     """
     logger.info("=" * 60)
     logger.info("DonutAI - Complete Crypto Data Pipeline")
-    logger.info("Phase 1: Collection → Phase 2: Cleaning → Phase 3: Labeling → Phase 4: Evaluation")
+    logger.info("Phase 1: Collection → Phase 2: Cleaning → Phase 3: Labeling → Phase 4: Evaluation → Phase 5: Anomaly Detection")
     logger.info("=" * 60)
     
+    # Initialize event tracker for product analytics
+    tracker = None
+    session_id = None
+    
     try:
+        tracker = EventTracker()
+        session_id = tracker.start_pipeline_session()
         # ============================================================
         # PHASE 1: DATA COLLECTION
         # ============================================================
@@ -63,7 +72,17 @@ def main():
         
         if not collected_data:
             logger.error("No data collected. Cannot proceed with cleaning and labeling.")
+            if tracker and session_id:
+                tracker.complete_pipeline_session(session_id, 'failed')
+                tracker.close()
             return 1
+        
+        # Track collection completion for analytics
+        tracker.track_phase_completion(
+            session_id,
+            'collection',
+            metadata={'coins_count': len(collected_data)}
+        )
         
         print(f"\n✅ Phase 1 Complete: Collected {len(collected_data)} coins")
         
@@ -80,6 +99,14 @@ def main():
         if not cleaned_data:
             logger.warning("No data cleaned. Proceeding with available data.")
         
+        # Track cleaning completion for analytics
+        cleaner_stats = cleaner_agent.get_stats()
+        tracker.track_phase_completion(
+            session_id,
+            'cleaning',
+            metadata={'files_cleaned': cleaner_stats.get('files_cleaned', len(cleaned_data))}
+        )
+        
         print(f"✅ Phase 2 Complete: Cleaned {len(cleaned_data)} records")
         
         # ============================================================
@@ -94,6 +121,14 @@ def main():
         
         if not labeled_data:
             logger.warning("No data labeled.")
+        
+        # Track labeling completion for analytics
+        labeler_stats = labeler_agent.get_stats()
+        tracker.track_phase_completion(
+            session_id,
+            'labeling',
+            metadata={'records_labeled': labeler_stats.get('records_labeled', len(labeled_data))}
+        )
         
         print(f"✅ Phase 3 Complete: Labeled {len(labeled_data)} records")
         
@@ -114,6 +149,13 @@ def main():
         # Get stats before closing (needed for final summary)
         evaluator_stats = evaluator_agent.get_stats()
         
+        # Track evaluation completion for analytics
+        tracker.track_phase_completion(
+            session_id,
+            'evaluation',
+            metadata={'evaluations_performed': evaluator_stats.get('evaluations_performed', 0)}
+        )
+        
         print(f"✅ Phase 4 Complete: Evaluated pipeline outputs")
         print(f"  - Collector evaluations: {collector_evals}")
         print(f"  - Cleaner evaluations: {cleaner_evals}")
@@ -122,6 +164,40 @@ def main():
         
         # Close database connection
         evaluator_agent.close()
+        
+        # ============================================================
+        # PHASE 5: ANOMALY DETECTION & ALERTING
+        # ============================================================
+        logger.info("\n" + "=" * 60)
+        logger.info("PHASE 5: ANOMALY DETECTION & ALERTING")
+        logger.info("=" * 60)
+        
+        anomaly_agent = AnomalyAgent()
+        anomaly_results = anomaly_agent.check_all_metrics(
+            threshold=0.7,  # Alert if quality score drops below 70%
+            lookback_days=7,  # Compare to last 7 days
+            send_alerts=True
+        )
+        
+        anomalies_found = anomaly_results.get('anomalies_found', 0)
+        critical_anomalies = anomaly_results.get('critical_anomalies', 0)
+        
+        anomaly_stats = anomaly_agent.get_stats()
+        anomaly_agent.close()
+        
+        print(f"✅ Phase 5 Complete: Anomaly detection performed")
+        print(f"  - Anomalies detected: {anomalies_found}")
+        print(f"  - Critical anomalies: {critical_anomalies}")
+        print(f"  - Alerts sent: {anomaly_stats.get('alerts_sent', 0)}")
+        
+        if anomalies_found > 0:
+            print(f"  ⚠️  WARNING: {anomalies_found} anomaly(ies) detected - check logs for details")
+        else:
+            print(f"  ✅ No anomalies detected - all metrics are healthy")
+        
+        # Complete pipeline session for analytics
+        tracker.complete_pipeline_session(session_id, 'completed')
+        tracker.close()
         
         # ============================================================
         # FINAL SUMMARY
@@ -151,16 +227,28 @@ def main():
         print(f"  - Low quality: {evaluator_stats.get('low_quality_count', 0)}")
         print(f"  - Evaluation database: data/evaluations.db")
         
+        print(f"\nPhase 5 - Anomaly Detection:")
+        print(f"  - Anomalies detected: {anomalies_found}")
+        print(f"  - Critical anomalies: {critical_anomalies}")
+        print(f"  - Checks performed: {anomaly_stats.get('anomaly_checks_performed', 0)}")
+        print(f"  - Alerts sent: {anomaly_stats.get('alerts_sent', 0)}")
+        
         print("\n" + "=" * 60)
         
         return 0  # Success exit code
         
     except KeyboardInterrupt:
         logger.info("Collection interrupted by user")
+        if tracker and session_id:
+            tracker.complete_pipeline_session(session_id, 'failed')
+            tracker.close()
         return 130  # Standard exit code for Ctrl+C
         
     except Exception as e:
         logger.error(f"Fatal error: {e}", exc_info=True)
+        if tracker and session_id:
+            tracker.complete_pipeline_session(session_id, 'failed')
+            tracker.close()
         return 1  # Error exit code
 
 
