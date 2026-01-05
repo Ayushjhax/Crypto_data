@@ -11,7 +11,7 @@ Both approaches have their place in real-world applications.
 """
 
 # Import SQLAlchemy functions for query building
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, and_, or_, text
 from datetime import datetime, date, timedelta
 from typing import List, Dict, Optional
 from database.models import Evaluation, EvaluationSummary, PipelineRun, DatabaseManager
@@ -197,8 +197,9 @@ class EvaluationQueries:
                 query += f" WHERE agent_type = '{agent_type}'"
             
             # Execute raw SQL query
+            # In SQLAlchemy 2.0+, raw SQL strings must be wrapped in text()
             # session.execute() runs raw SQL
-            result = session.execute(query).fetchone()  # fetchone() gets first row
+            result = session.execute(text(query)).fetchone()  # fetchone() gets first row
             
             # result is a tuple: (total, high_quality, medium_quality, low_quality)
             return {
@@ -263,9 +264,14 @@ class EvaluationQueries:
             ).all()
             
             # Convert to list of dictionaries
+            # Handle both date objects and strings (SQLite DATE() returns string)
             return [
                 {
-                    'date': r.eval_date.isoformat() if r.eval_date else None,  # Convert date to ISO string
+                    'date': (
+                        r.eval_date.isoformat() if hasattr(r.eval_date, 'isoformat') 
+                        else str(r.eval_date) if r.eval_date 
+                        else None
+                    ),  # Convert date to ISO string
                     'avg_score': round(r.avg_score, 3) if r.avg_score else None,
                     'count': r.count
                 }
