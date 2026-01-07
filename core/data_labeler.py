@@ -1,5 +1,5 @@
 """
-Core data labeling logic.
+Core data labeling logic. 
 
 INTERVIEW EXPLANATION:
 Data labeling adds meaningful categories or tags to data.
