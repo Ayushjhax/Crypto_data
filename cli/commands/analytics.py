@@ -1,6 +1,3 @@
-"""
-CLI commands for product analytics (DAU, conversion, funnel, retention).
-"""
 
 import click
 from datetime import date, timedelta
@@ -14,7 +11,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def analytics():
-    """Product analytics commands."""
     pass
 
 
@@ -24,7 +20,6 @@ def analytics():
 @click.option('--db-path', default='data/analytics.db', help='Path to analytics database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def dau(target_date_str, db_path, output_format):
-    """Calculate Daily Active Users (DAU)."""
     try:
         calculator = MetricsCalculator(db_path=db_path)
         
@@ -49,7 +44,6 @@ def dau(target_date_str, db_path, output_format):
 @click.option('--db-path', default='data/analytics.db', help='Path to analytics database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def dau_timeseries(days, db_path, output_format):
-    """Get DAU time series data."""
     try:
         calculator = MetricsCalculator(db_path=db_path)
         
@@ -76,7 +70,6 @@ def dau_timeseries(days, db_path, output_format):
 @click.option('--db-path', default='data/analytics.db', help='Path to analytics database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def conversion(start_event, end_event, start_date, end_date, db_path, output_format):
-    """Calculate conversion rate between two events."""
     try:
         calculator = MetricsCalculator(db_path=db_path)
         
@@ -109,7 +102,6 @@ def conversion(start_event, end_event, start_date, end_date, db_path, output_for
 @click.option('--db-path', default='data/analytics.db', help='Path to analytics database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def funnel(days, db_path, output_format):
-    """Calculate pipeline funnel analysis."""
     try:
         calculator = MetricsCalculator(db_path=db_path)
         
@@ -141,7 +133,6 @@ def funnel(days, db_path, output_format):
 @click.option('--db-path', default='data/analytics.db', help='Path to analytics database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def retention(cohort_date, days, db_path, output_format):
-    """Calculate retention rates for a cohort."""
     try:
         calculator = MetricsCalculator(db_path=db_path)
         
@@ -170,7 +161,6 @@ def retention(cohort_date, days, db_path, output_format):
 @click.option('--db-path', default='data/analytics.db', help='Path to analytics database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def summary(days, db_path, output_format):
-    """Get complete analytics summary (DAU, funnel, conversion, retention)."""
     try:
         calculator = MetricsCalculator(db_path=db_path)
         
@@ -179,21 +169,17 @@ def summary(days, db_path, output_format):
         print_info(f"Analytics Summary (last {days} days):")
         print("\n" + "="*60)
         
-        # DAU
         print(f"\nDaily Active Users (DAU):")
         print(f"  Current: {summary_data['dau']['current']}")
         
-        # Funnel
         print(f"\nPipeline Funnel:")
         for step, data in summary_data['funnel'].items():
             print(f"  {step}: {data['users_reached']} users ({format_percentage(data['conversion_rate'])} conversion)")
         
-        # Conversion rates
         print(f"\nConversion Rates:")
         for name, rate in summary_data['conversion'].items():
             print(f"  {name}: {format_percentage(rate)}")
         
-        # Feature usage
         print(f"\nFeature Usage:")
         usage = summary_data['feature_usage']
         print(f"  Total Sessions: {usage['total_sessions']}")

@@ -1,6 +1,3 @@
-"""
-CLI commands for generating reports.
-"""
 
 import click
 from pathlib import Path
@@ -17,7 +14,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def report():
-    """Report generation commands."""
     pass
 
 
@@ -29,7 +25,6 @@ def report():
               help='Output directory for report')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def evaluation(agent_type, days, output_dir, output_format):
-    """Generate evaluation quality report."""
     try:
         print_info(f"Generating evaluation report for {agent_type} (last {days} days)...")
         
@@ -38,7 +33,6 @@ def evaluation(agent_type, days, output_dir, output_format):
         agent_filter = None if agent_type == 'all' else agent_type
         report = analyzer.generate_quality_report(agent_type=agent_filter, days=days)
         
-        # Save report if output directory specified
         if output_dir:
             output_dir.mkdir(parents=True, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -48,7 +42,6 @@ def evaluation(agent_type, days, output_dir, output_format):
             if save_json_file(report, filepath):
                 print_success(f"Report saved to {filepath}")
         
-        # Display report summary
         print("\n" + "="*60)
         print("EVALUATION QUALITY REPORT")
         print("="*60)
@@ -88,12 +81,9 @@ def evaluation(agent_type, days, output_dir, output_format):
 @click.option('--output-format', type=click.Choice(['table', 'json', 'markdown']), default='table',
               help='Output format')
 def quality_summary(output_dir, output_format):
-    """Generate data quality summary report."""
     try:
         print_info("Generating data quality summary report...")
         
-        # This would generate a comprehensive quality report
-        # For now, we'll show available quality reports
         output_dir = output_dir or QUALITY_REPORTS_DIR
         
         if output_dir.exists():

@@ -1,19 +1,3 @@
-"""
-Data quality report generator.
-
-INTERVIEW EXPLANATION:
-This module generates comprehensive data quality reports that:
-1. Analyze data against standards (data dictionary)
-2. Calculate quality metrics
-3. Identify issues and trends
-4. Provide actionable recommendations
-
-Reports are essential for:
-- Monitoring data quality over time
-- Identifying systematic issues
-- Demonstrating data governance
-- Meeting compliance requirements
-"""
 
 from typing import Dict, List, Any, Optional
 from pathlib import Path
@@ -27,24 +11,8 @@ logger = setup_logger(__name__)
 
 
 class DataQualityReporter:
-    """
-    Generates comprehensive data quality reports.
-    
-    INTERVIEW EXPLANATION:
-    This class combines:
-    - Data dictionary (standards)
-    - Quality metrics calculation
-    - Report generation
-    - Trend analysis
-    """
     
     def __init__(self, dictionary: Optional[DataDictionary] = None):
-        """
-        Initialize reporter.
-        
-        Args:
-            dictionary: Data dictionary instance (creates new one if None)
-        """
         self.dictionary = dictionary or DataDictionary()
         self.report_history = []
     
@@ -53,28 +21,15 @@ class DataQualityReporter:
         data: Dict[str, Any],
         report_type: str = "full"
     ) -> Dict[str, Any]:
-        """
-        Generate comprehensive data quality report.
-        
-        Args:
-            data: Data record to analyze
-            report_type: "full", "summary", or "quick"
-        
-        Returns:
-            Complete quality report dictionary
-        """
         logger.info(f"Generating {report_type} quality report for {data.get('symbol', 'unknown')}")
         
-        # Validate data against dictionary
         validation_errors = self.dictionary.validate_data(data)
         
-        # Calculate metrics
         completeness = self._analyze_completeness(data)
         validity = self._analyze_validity(data, validation_errors)
         consistency = self._analyze_consistency(data)
         quality_score = self._calculate_quality_score(completeness, validity, consistency)
         
-        # Build report
         report = {
             "report_metadata": {
                 "generated_at": datetime.now().isoformat(),
@@ -92,7 +47,6 @@ class DataQualityReporter:
             )
         }
         
-        # Add detailed analysis for full reports
         if report_type == "full":
             report["field_analysis"] = self._analyze_fields(data)
             report["validation_details"] = validation_errors
@@ -101,7 +55,6 @@ class DataQualityReporter:
         return report
     
     def _analyze_completeness(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze data completeness."""
         total_fields = len(self.dictionary.fields)
         present_fields = sum(
             1 for field_name in self.dictionary.fields
@@ -149,12 +102,9 @@ class DataQualityReporter:
         data: Dict[str, Any],
         validation_errors: Dict[str, List[str]]
     ) -> Dict[str, Any]:
-        """Analyze data validity against standards."""
         total_errors = sum(len(errors) for errors in validation_errors.values())
         total_fields = len(self.dictionary.fields)
         
-        # Calculate validity percentage
-        # Each error reduces score, but we weight by field importance
         error_weight = total_errors / total_fields if total_fields > 0 else 0
         validity_pct = max(0, 100 - (error_weight * 100))
         
@@ -172,10 +122,8 @@ class DataQualityReporter:
         }
     
     def _analyze_consistency(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze data consistency and logical relationships."""
         issues = []
         
-        # Check price relationships
         if all(k in data for k in ["price", "lowest_24h", "highest_24h"]):
             price = data.get("price")
             lowest = data.get("lowest_24h")
@@ -189,19 +137,16 @@ class DataQualityReporter:
                 elif price > highest * 1.1:
                     issues.append("Price significantly above 24h high (possible outlier)")
         
-        # Check label consistency
         if "price_movement" in data and "price_change_24h" in data:
             movement = data.get("price_movement")
             change = data.get("price_change_24h")
             
             if change is not None and movement:
-                # Basic consistency check
                 if change > 5 and movement not in ["strong_up", "up"]:
                     issues.append("price_movement label may not match price_change_24h value")
                 elif change < -5 and movement not in ["strong_down", "down"]:
                     issues.append("price_movement label may not match price_change_24h value")
         
-        # Check for unusual values
         if "price_change_24h" in data and data["price_change_24h"]:
             change = abs(data["price_change_24h"])
             if change > 50:
@@ -218,7 +163,6 @@ class DataQualityReporter:
         }
     
     def _analyze_fields(self, data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
-        """Detailed analysis of each field."""
         field_analysis = {}
         
         for field_name, field_def in self.dictionary.fields.items():
@@ -233,7 +177,6 @@ class DataQualityReporter:
                 "validation_errors": []
             }
             
-            # Validate this field
             if field_name in data:
                 errors = self.dictionary.validate_field(field_name, value)
                 analysis["validation_errors"] = errors
@@ -249,8 +192,6 @@ class DataQualityReporter:
         validity: Dict[str, Any],
         consistency: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Calculate overall quality score."""
-        # Weighted average
         score = (
             completeness["required_completeness_percentage"] * 0.4 +
             validity["validity_percentage"] * 0.4 +
@@ -268,7 +209,6 @@ class DataQualityReporter:
         }
     
     def _grade_score(self, score: float) -> str:
-        """Convert numeric score to letter grade."""
         if score >= 90:
             return "A"
         elif score >= 80:
@@ -287,17 +227,14 @@ class DataQualityReporter:
         consistency: Dict[str, Any],
         validation_errors: Dict[str, List[str]]
     ) -> List[str]:
-        """Generate actionable recommendations."""
         recommendations = []
         
-        # Completeness recommendations
         if completeness["required_completeness_percentage"] < 100:
             missing = completeness["missing_required_fields"]
             recommendations.append(
                 f"Add missing required fields: {', '.join(missing)}"
             )
         
-        # Validity recommendations
         if validity["total_errors"] > 0:
             if validation_errors.get("type_errors"):
                 recommendations.append(
@@ -308,14 +245,12 @@ class DataQualityReporter:
                     "Review validation rule violations - values may be out of acceptable ranges"
                 )
         
-        # Consistency recommendations
         if consistency["issues_count"] > 0:
             recommendations.append(
                 f"Address {consistency['issues_count']} consistency issue(s) - "
                 "check logical relationships between fields"
             )
         
-        # Positive feedback
         if (completeness["required_completeness_percentage"] == 100 and
             validity["total_errors"] == 0 and
             consistency["issues_count"] == 0):
@@ -329,17 +264,6 @@ class DataQualityReporter:
         output_path: Optional[Path] = None,
         format: str = "json"
     ) -> Path:
-        """
-        Save report to file.
-        
-        Args:
-            report: Report dictionary to save
-            output_path: Optional custom path
-            format: "json" or "markdown"
-        
-        Returns:
-            Path to saved file
-        """
         from config.settings import QUALITY_REPORTS_DIR
         
         if not output_path:
@@ -364,7 +288,6 @@ class DataQualityReporter:
         return output_path
     
     def _report_to_markdown(self, report: Dict[str, Any]) -> str:
-        """Convert report to Markdown format."""
         lines = [
             "# Data Quality Report",
             "",
@@ -447,18 +370,8 @@ class DataQualityReporter:
         self,
         data_list: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-        """
-        Generate aggregate report for multiple data records.
-        
-        Args:
-            data_list: List of data dictionaries
-        
-        Returns:
-            Aggregate quality report
-        """
         reports = [self.generate_report(data, report_type="summary") for data in data_list]
         
-        # Calculate averages
         avg_scores = {
             "completeness": sum(r["completeness"]["required_completeness_percentage"] for r in reports) / len(reports),
             "validity": sum(r["validity"]["validity_percentage"] for r in reports) / len(reports),
@@ -471,7 +384,6 @@ class DataQualityReporter:
             avg_scores["consistency"] * 0.2
         )
         
-        # Collect common issues
         all_issues = []
         for report in reports:
             all_issues.extend(report["consistency"]["consistency_issues"])

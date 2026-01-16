@@ -1,15 +1,3 @@
-"""
-Quick test script to verify the data collection setup.
-
-Run this to test if your API key and configuration are working correctly.
-
-INTERVIEW EXPLANATION:
-Test scripts are important for:
-1. Quick verification of setup
-2. Debugging configuration issues
-3. Validating API connectivity
-4. Demonstrating functionality
-"""
 
 from core.data_collector import DataCollector
 from config.settings import FREECRYPTO_API_KEY, FREECRYPTO_API_BASE_URL
@@ -19,19 +7,16 @@ logger = setup_logger(__name__)
 
 
 def test_single_coin():
-    """Test collecting data for a single coin (Bitcoin)."""
     print("=" * 60)
     print("Testing Data Collection - Single Coin (BTC)")
     print("=" * 60)
     
     try:
-        # Initialize collector
         collector = DataCollector(
             api_key=FREECRYPTO_API_KEY,
             base_url=FREECRYPTO_API_BASE_URL
         )
         
-        # Collect data for Bitcoin
         print("\nCollecting data for BTC...")
         data = collector.collect_coin_data("BTC")
         
@@ -44,7 +29,6 @@ def test_single_coin():
             print(f"  24h Volume: {data.get('volume_24h', 'N/A')}")
             print(f"  24h Change: {data.get('price_change_24h', 'N/A')}%")
             
-            # Test saving
             print("\nTesting data saving...")
             filepath = collector.save_data(data, format="json")
             print(f"✅ Data saved to: {filepath}")

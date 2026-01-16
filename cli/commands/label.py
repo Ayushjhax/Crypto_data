@@ -1,6 +1,3 @@
-"""
-CLI commands for data labeling.
-"""
 
 import click
 from pathlib import Path
@@ -15,7 +12,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def label():
-    """Data labeling commands."""
     pass
 
 
@@ -23,7 +19,6 @@ def label():
 @click.option('--save/--no-save', default=True, help='Save labeled data to files')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def all(save, output_format):
-    """Label all cleaned data files."""
     try:
         print_info("Starting data labeling for all cleaned files...")
         agent = LabelerAgent()
@@ -33,7 +28,6 @@ def all(save, output_format):
         if labeled_data:
             print_success(f"Labeled {len(labeled_data)} files")
             
-            # Display statistics
             stats = agent.get_stats()
             print(f"\nLabeling Statistics:")
             print(format_output(stats, format=output_format))
@@ -51,18 +45,15 @@ def all(save, output_format):
 @click.option('--save/--no-save', default=True, help='Save labeled data to file')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def file(filepath, save, output_format):
-    """Label a specific cleaned data file."""
     try:
         print_info(f"Labeling data from {filepath.name}...")
         agent = LabelerAgent()
         
-        # Load cleaned data
         cleaned_data = load_json_file(filepath)
         if not cleaned_data:
             print_error(f"Failed to load data from {filepath}")
             raise click.Abort()
         
-        # Label the data
         labeled_data = agent.labeler.label_data(cleaned_data)
         
         if labeled_data:
@@ -83,7 +74,6 @@ def file(filepath, save, output_format):
 @label.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def stats(output_format):
-    """Show labeling statistics."""
     try:
         agent = LabelerAgent()
         stats = agent.get_stats()
@@ -100,7 +90,6 @@ def stats(output_format):
 @label.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def list_files(output_format):
-    """List all cleaned data files available for labeling."""
     try:
         cleaned_files = list(CLEANED_DATA_DIR.glob("*.json"))
         cleaned_files = [f for f in cleaned_files if not f.name.startswith("all_coins")]

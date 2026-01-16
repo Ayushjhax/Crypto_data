@@ -1,19 +1,8 @@
-"""
-Main CLI entry point for DonutAI.
-
-This CLI provides commands for:
-- Data collection, cleaning, and labeling
-- Quality checks and evaluation
-- Analytics and reporting
-- Anomaly detection
-- Data standards management
-"""
 
 import click
 import sys
 from pathlib import Path
 
-# Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -27,16 +16,9 @@ logger = setup_logger(__name__)
 @click.group()
 @click.version_option(version='1.0.0')
 def cli():
-    """
-    DonutAI - Crypto Data Pipeline CLI
-    
-    A comprehensive CLI for managing the crypto data collection, processing,
-    and analytics pipeline.
-    """
     pass
 
 
-# Add command groups
 cli.add_command(collect.collect, name='collect')
 cli.add_command(clean.clean, name='clean')
 cli.add_command(label.label, name='label')
@@ -50,11 +32,9 @@ cli.add_command(standards.standards, name='standards')
 
 @cli.command()
 def pipeline():
-    """Run the complete pipeline (collect → clean → label → evaluate → anomaly check)."""
     try:
         print_info("Starting complete pipeline...")
         
-        # Import main function
         from main import main as run_pipeline
         
         exit_code = run_pipeline()
@@ -74,21 +54,11 @@ def pipeline():
 @click.option('--skip-reports', is_flag=True, help='Skip report generation')
 @click.option('--analytics-days', default=30, help='Number of days for analytics (default: 30)')
 def run_all(skip_analytics, skip_reports, analytics_days):
-    """
-    Run everything: Complete pipeline + Analytics + Reports + Status.
-    
-    This command runs:
-    1. Complete pipeline (collect → clean → label → evaluate → anomaly)
-    2. Analytics summary
-    3. Report generation
-    4. Final status
-    """
     try:
         print("\n" + "="*60)
         print("🚀 DONUTAI - RUNNING EVERYTHING")
         print("="*60 + "\n")
         
-        # Step 1: Run complete pipeline
         print("📊 STEP 1: Running Complete Pipeline...")
         print("-" * 60)
         try:
@@ -108,7 +78,6 @@ def run_all(skip_analytics, skip_reports, analytics_days):
         
         print("\n")
         
-        # Step 2: Analytics (if not skipped)
         if not skip_analytics:
             print("📈 STEP 2: Generating Analytics Summary...")
             print("-" * 60)
@@ -129,7 +98,6 @@ def run_all(skip_analytics, skip_reports, analytics_days):
         
         print("\n")
         
-        # Step 3: Reports (if not skipped)
         if not skip_reports:
             print("📄 STEP 3: Generating Reports...")
             print("-" * 60)
@@ -137,7 +105,6 @@ def run_all(skip_analytics, skip_reports, analytics_days):
                 from analytics.evaluation_analyzer import EvaluationAnalyzer
                 analyzer = EvaluationAnalyzer()
                 
-                # Generate evaluation report
                 report = analyzer.generate_quality_report(days=7)
                 print_success("Evaluation quality report generated")
                 
@@ -148,13 +115,11 @@ def run_all(skip_analytics, skip_reports, analytics_days):
         
         print("\n")
         
-        # Step 4: Final Status
         print("📋 STEP 4: Final System Status...")
         print("-" * 60)
         try:
             from config.settings import RAW_DATA_DIR, CLEANED_DATA_DIR, LABELED_DATA_DIR
             
-            # Count files in each directory
             raw_files = len(list(RAW_DATA_DIR.glob("*.json"))) if RAW_DATA_DIR.exists() else 0
             cleaned_files = len(list(CLEANED_DATA_DIR.glob("*.json"))) if CLEANED_DATA_DIR.exists() else 0
             labeled_files = len(list(LABELED_DATA_DIR.glob("*.json"))) if LABELED_DATA_DIR.exists() else 0
@@ -164,7 +129,6 @@ def run_all(skip_analytics, skip_reports, analytics_days):
             print(f"  ✅ Cleaned: {cleaned_files} files")
             print(f"  ✅ Labeled: {labeled_files} files")
             
-            # Check database
             eval_db = Path("data/evaluations.db")
             if eval_db.exists():
                 size_mb = eval_db.stat().st_size / (1024 * 1024)
@@ -193,7 +157,6 @@ def run_all(skip_analytics, skip_reports, analytics_days):
 
 @cli.command()
 def status():
-    """Show overall system status."""
     try:
         from config.settings import RAW_DATA_DIR, CLEANED_DATA_DIR, LABELED_DATA_DIR
         from pathlib import Path
@@ -201,7 +164,6 @@ def status():
         print("System Status")
         print("="*60)
         
-        # Count files in each directory
         raw_files = len(list(RAW_DATA_DIR.glob("*.json"))) if RAW_DATA_DIR.exists() else 0
         cleaned_files = len(list(CLEANED_DATA_DIR.glob("*.json"))) if CLEANED_DATA_DIR.exists() else 0
         labeled_files = len(list(LABELED_DATA_DIR.glob("*.json"))) if LABELED_DATA_DIR.exists() else 0
@@ -211,7 +173,6 @@ def status():
         print(f"  Cleaned: {cleaned_files} files")
         print(f"  Labeled: {labeled_files} files")
         
-        # Check database
         eval_db = Path("data/evaluations.db")
         if eval_db.exists():
             size_mb = eval_db.stat().st_size / (1024 * 1024)

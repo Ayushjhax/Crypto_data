@@ -1,24 +1,7 @@
-"""
-Main entry point for the crypto data collection pipeline.
-
-INTERVIEW EXPLANATION:
-This is the entry point of the application. It:
-1. Initializes the agent
-2. Runs the collection workflow
-3. Handles top-level errors
-4. Provides a simple interface to run the pipeline
-
-In production, this might be:
-- A CLI tool with arguments
-- A scheduled job (cron, Airflow, etc.)
-- A web service endpoint
-- Part of a larger orchestration system
-"""
 
 import sys
 from pathlib import Path
 
-# Add project root to path for imports
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
@@ -34,35 +17,17 @@ logger = setup_logger(__name__)
 
 
 def main():
-    """
-    Main function to run the complete data pipeline.
-    
-    INTERVIEW EXPLANATION:
-    This function orchestrates the complete pipeline:
-    1. Data Collection (Phase 1)
-    2. Data Cleaning (Phase 2)
-    3. Data Labeling (Phase 3)
-    4. Data Evaluation (Phase 4) - Critic Agent
-    5. Anomaly Detection (Phase 5) - Monitor metrics for anomalies
-    
-    This demonstrates a complete ETL (Extract, Transform, Load) pipeline
-    with quality evaluation and anomaly detection using agent patterns.
-    """
     logger.info("=" * 60)
     logger.info("DonutAI - Complete Crypto Data Pipeline")
     logger.info("Phase 1: Collection → Phase 2: Cleaning → Phase 3: Labeling → Phase 4: Evaluation → Phase 5: Anomaly Detection")
     logger.info("=" * 60)
     
-    # Initialize event tracker for product analytics
     tracker = None
     session_id = None
     
     try:
         tracker = EventTracker()
         session_id = tracker.start_pipeline_session()
-        # ============================================================
-        # PHASE 1: DATA COLLECTION
-        # ============================================================
         logger.info("\n" + "=" * 60)
         logger.info("PHASE 1: DATA COLLECTION")
         logger.info("=" * 60)
@@ -77,7 +42,6 @@ def main():
                 tracker.close()
             return 1
         
-        # Track collection completion for analytics
         tracker.track_phase_completion(
             session_id,
             'collection',
@@ -86,9 +50,6 @@ def main():
         
         print(f"\n✅ Phase 1 Complete: Collected {len(collected_data)} coins")
         
-        # ============================================================
-        # PHASE 2: DATA CLEANING
-        # ============================================================
         logger.info("\n" + "=" * 60)
         logger.info("PHASE 2: DATA CLEANING")
         logger.info("=" * 60)
@@ -99,7 +60,6 @@ def main():
         if not cleaned_data:
             logger.warning("No data cleaned. Proceeding with available data.")
         
-        # Track cleaning completion for analytics
         cleaner_stats = cleaner_agent.get_stats()
         tracker.track_phase_completion(
             session_id,
@@ -109,9 +69,6 @@ def main():
         
         print(f"✅ Phase 2 Complete: Cleaned {len(cleaned_data)} records")
         
-        # ============================================================
-        # PHASE 3: DATA LABELING
-        # ============================================================
         logger.info("\n" + "=" * 60)
         logger.info("PHASE 3: DATA LABELING")
         logger.info("=" * 60)
@@ -122,7 +79,6 @@ def main():
         if not labeled_data:
             logger.warning("No data labeled.")
         
-        # Track labeling completion for analytics
         labeler_stats = labeler_agent.get_stats()
         tracker.track_phase_completion(
             session_id,
@@ -132,9 +88,6 @@ def main():
         
         print(f"✅ Phase 3 Complete: Labeled {len(labeled_data)} records")
         
-        # ============================================================
-        # PHASE 4: DATA EVALUATION (Critic Agent)
-        # ============================================================
         logger.info("\n" + "=" * 60)
         logger.info("PHASE 4: DATA EVALUATION (Critic Agent)")
         logger.info("=" * 60)
@@ -146,10 +99,8 @@ def main():
         cleaner_evals = len(evaluation_results.get('cleaner_evaluations', []))
         labeler_evals = len(evaluation_results.get('labeler_evaluations', []))
         
-        # Get stats before closing (needed for final summary)
         evaluator_stats = evaluator_agent.get_stats()
         
-        # Track evaluation completion for analytics
         tracker.track_phase_completion(
             session_id,
             'evaluation',
@@ -162,12 +113,8 @@ def main():
         print(f"  - Labeler evaluations: {labeler_evals}")
         print(f"  - Evaluation data saved to: data/evaluations.db")
         
-        # Close database connection
         evaluator_agent.close()
         
-        # ============================================================
-        # PHASE 5: ANOMALY DETECTION & ALERTING
-        # ============================================================
         logger.info("\n" + "=" * 60)
         logger.info("PHASE 5: ANOMALY DETECTION & ALERTING")
         logger.info("=" * 60)
@@ -195,13 +142,9 @@ def main():
         else:
             print(f"  ✅ No anomalies detected - all metrics are healthy")
         
-        # Complete pipeline session for analytics
         tracker.complete_pipeline_session(session_id, 'completed')
         tracker.close()
         
-        # ============================================================
-        # FINAL SUMMARY
-        # ============================================================
         print("\n" + "=" * 60)
         print("PIPELINE COMPLETE")
         print("=" * 60)
@@ -253,13 +196,6 @@ def main():
 
 
 if __name__ == "__main__":
-    """
-    INTERVIEW EXPLANATION:
-    The `if __name__ == "__main__"` guard ensures:
-    1. Code only runs when script is executed directly
-    2. Can import this module without running main()
-    3. Standard Python pattern for executable scripts
-    """
     exit_code = main()
     sys.exit(exit_code)
 

@@ -1,18 +1,3 @@
-"""
-Core anomaly detection logic for product metrics monitoring.
-
-INTERVIEW EXPLANATION:
-This module detects anomalies in metrics using statistical methods:
-1. Threshold-based: Alert if metric crosses threshold
-2. Statistical: Z-score (how many standard deviations from mean)
-3. Moving average: Compare current value to historical average
-4. Rate of change: Detect sudden changes in patterns
-
-For production, you'd also use:
-- Prophet (Facebook) for time series forecasting
-- Isolation Forest for outlier detection
-- LSTM networks for pattern detection
-"""
 
 import numpy as np
 from datetime import datetime, timedelta
@@ -25,27 +10,8 @@ logger = setup_logger(__name__)
 
 
 class AnomalyDetector:
-    """
-    Detects anomalies in product metrics.
-    
-    INTERVIEW EXPLANATION:
-    This class implements multiple anomaly detection methods:
-    - Threshold Detection: Simple threshold crossing
-    - Z-Score Detection: Statistical outlier detection
-    - Moving Average: Compare to historical average
-    - Rate of Change: Detect sudden changes
-    
-    Methods can be combined for more robust detection.
-    """
     
     def __init__(self, db_manager: DatabaseManager):
-        """
-        Initialize anomaly detector with database manager.
-        
-        INTERVIEW EXPLANATION:
-        db_manager provides access to evaluation data stored in database.
-        We use EvaluationQueries to retrieve historical metrics for comparison.
-        """
         self.db = db_manager
         self.queries = EvaluationQueries(db_manager)
     
@@ -56,27 +22,8 @@ class AnomalyDetector:
         lookback_days: int = 7,
         z_score_threshold: float = -2.0
     ) -> Dict[str, Any]:
-        """
-        Detect if data quality scores drop below acceptable levels.
-        
-        INTERVIEW EXPLANATION:
-        This uses multiple detection methods:
-        1. Threshold-based: Is score below minimum acceptable?
-        2. Statistical (Z-score): Is score significantly lower than historical?
-        3. Rate of change: Did score drop suddenly?
-        
-        Args:
-            agent_type: Which agent to monitor (collector/cleaner/labeler)
-            threshold: Minimum acceptable overall score (0.7 = 70%)
-            lookback_days: How many days to analyze
-            z_score_threshold: Z-score threshold for anomaly (default -2.0 = 2 std dev below mean)
-            
-        Returns:
-            Dictionary with anomaly detection results
-        """
         logger.info(f"Checking for anomalies in {agent_type} quality scores")
         
-        # Get recent quality scores from database
         recent_scores_data = self.queries.get_trend_over_time(
             agent_type=agent_type,
             days=lookback_days
@@ -90,7 +37,6 @@ class AnomalyDetector:
                 'timestamp': datetime.now().isoformat()
             }
         
-        # Extract scores from data (handle None values)
         recent_scores = [
             s['avg_score'] for s in recent_scores_data 
             if s['avg_score'] is not None
@@ -104,21 +50,15 @@ class AnomalyDetector:
                 'timestamp': datetime.now().isoformat()
             }
         
-        # Get most recent score
         latest_score = recent_scores[-1]
         
-        # Calculate average of historical scores (excluding latest)
         historical_scores = recent_scores[:-1]
         historical_avg = np.mean(historical_scores)
         historical_std = np.std(historical_scores) if len(historical_scores) > 1 else 0
         
-        # Track all detected anomalies
         anomalies = []
         severity_levels = []
         
-        # ============================================================
-        # 1. THRESHOLD CHECK: Is score below minimum acceptable?
-        # ============================================================
         if latest_score < threshold:
             anomalies.append({
                 'type': 'threshold',
@@ -130,13 +70,9 @@ class AnomalyDetector:
             })
             severity_levels.append('high')
         
-        # ============================================================
-        # 2. STATISTICAL CHECK: Z-score analysis
-        # ============================================================
         if historical_std > 0:  # Avoid division by zero
             z_score = (latest_score - historical_avg) / historical_std
             
-            # If score is significantly below average (negative z-score), it's anomalous
             if z_score < z_score_threshold:
                 anomalies.append({
                     'type': 'statistical',
@@ -149,15 +85,11 @@ class AnomalyDetector:
                 })
                 severity_levels.append('high' if abs(z_score) >= 3.0 else 'medium')
         
-        # ============================================================
-        # 3. RATE OF CHANGE: Did score drop suddenly?
-        # ============================================================
         if len(historical_scores) >= 2:
             previous_score = historical_scores[-1]
             if previous_score > 0:  # Avoid division by zero
                 change_rate = (latest_score - previous_score) / previous_score
                 
-                # If score dropped by more than 20%, it's anomalous
                 if change_rate < -0.2:
                     anomalies.append({
                         'type': 'rate_of_change',
@@ -169,7 +101,6 @@ class AnomalyDetector:
                     })
                     severity_levels.append('high')
         
-        # Determine overall severity (use highest severity found)
         overall_severity = 'high' if 'high' in severity_levels else ('medium' if severity_levels else 'low')
         
         return {
@@ -190,21 +121,6 @@ class AnomalyDetector:
         error_counts: List[int],
         threshold_multiplier: float = 2.0
     ) -> Dict[str, Any]:
-        """
-        Detect if error rate suddenly spikes.
-        
-        INTERVIEW EXPLANATION:
-        Compares recent error counts to historical average.
-        If recent errors are 2x+ the average, it's an anomaly.
-        Simple but effective for detecting sudden spikes.
-        
-        Args:
-            error_counts: List of error counts over time (e.g., [5, 3, 2, 15, 4])
-            threshold_multiplier: How many times average = anomaly (2.0 = 2x)
-            
-        Returns:
-            Anomaly detection result dictionary
-        """
         if len(error_counts) < 2:
             return {
                 'anomaly_detected': False,
@@ -239,25 +155,8 @@ class AnomalyDetector:
         collection_stats: Dict[str, Any],
         historical_avg: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """
-        Detect anomalies in collection metrics.
-        
-        INTERVIEW EXPLANATION:
-        Monitors collection-related metrics like:
-        - Success rate (should be high)
-        - Collection time (should be consistent)
-        - Data volume (should be within expected range)
-        
-        Args:
-            collection_stats: Current collection statistics
-            historical_avg: Historical average statistics for comparison
-            
-        Returns:
-            Anomaly detection result
-        """
         anomalies = []
         
-        # Check success rate
         current_success_rate = collection_stats.get('success_rate', 1.0)
         historical_success_rate = historical_avg.get('success_rate', 0.95)
         
@@ -270,7 +169,6 @@ class AnomalyDetector:
                 'historical_value': historical_success_rate
             })
         
-        # Check collection count
         current_count = collection_stats.get('successful', 0)
         historical_count = historical_avg.get('successful', 8)
         
@@ -290,20 +188,6 @@ class AnomalyDetector:
         }
     
     def check_all_agents(self, threshold: float = 0.7, lookback_days: int = 7) -> Dict[str, Any]:
-        """
-        Check all agents for anomalies.
-        
-        INTERVIEW EXPLANATION:
-        Convenience method to check all agent types at once.
-        Returns comprehensive anomaly report.
-        
-        Args:
-            threshold: Minimum acceptable quality score
-            lookback_days: Number of days to look back
-            
-        Returns:
-            Dictionary with anomaly results for each agent type
-        """
         results = {
             'timestamp': datetime.now().isoformat(),
             'agents_checked': [],

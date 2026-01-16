@@ -1,6 +1,3 @@
-"""
-CLI commands for data quality checks and reports.
-"""
 
 import click
 from pathlib import Path
@@ -17,7 +14,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def quality():
-    """Data quality check commands."""
     pass
 
 
@@ -29,26 +25,21 @@ def quality():
 @click.option('--output-format', type=click.Choice(['table', 'json', 'markdown']), default='table',
               help='Output format')
 def check(filepath, report_type, save, output_format):
-    """Check data quality for a specific file."""
     try:
         print_info(f"Checking data quality for {filepath.name}...")
         
-        # Load data
         data = load_json_file(filepath)
         if not data:
             print_error(f"Failed to load data from {filepath}")
             raise click.Abort()
         
-        # Generate quality report
         reporter = DataQualityReporter()
         report = reporter.generate_report(data, report_type=report_type)
         
-        # Save report if requested
         if save:
             report_path = reporter.save_report(report, format='json' if output_format == 'json' else 'markdown')
             print_success(f"Quality report saved to {report_path}")
         
-        # Display report
         if output_format == 'table':
             print("\n" + "="*60)
             print("DATA QUALITY REPORT")
@@ -88,9 +79,7 @@ def check(filepath, report_type, save, output_format):
 @click.option('--save/--no-save', default=True, help='Save reports to files')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def batch(data_dir, save, output_format):
-    """Check quality for all files in a directory."""
     try:
-        # Select directory
         if data_dir == 'raw':
             data_dir_path = RAW_DATA_DIR
         elif data_dir == 'cleaned':
@@ -98,7 +87,6 @@ def batch(data_dir, save, output_format):
         else:
             data_dir_path = LABELED_DATA_DIR
         
-        # Get all JSON files
         files = list(data_dir_path.glob("*.json"))
         files = [f for f in files if not f.name.startswith("all_coins")]
         
@@ -117,10 +105,8 @@ def batch(data_dir, save, output_format):
                 all_data.append(data)
         
         if all_data:
-            # Generate batch report
             batch_report = reporter.generate_batch_report(all_data)
             
-            # Save if requested
             if save:
                 from datetime import datetime
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -130,7 +116,6 @@ def batch(data_dir, save, output_format):
                     json.dump(batch_report, f, indent=2, default=str)
                 print_success(f"Batch quality report saved to {report_path}")
             
-            # Display summary
             print("\n" + "="*60)
             print("BATCH QUALITY REPORT")
             print("="*60)
@@ -157,7 +142,6 @@ def batch(data_dir, save, output_format):
 @quality.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def standards(output_format):
-    """Show data standards and dictionary information."""
     try:
         dictionary = DataDictionary()
         

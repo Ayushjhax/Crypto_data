@@ -1,6 +1,3 @@
-"""
-CLI commands for anomaly detection and monitoring.
-"""
 
 import click
 
@@ -13,7 +10,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def anomaly():
-    """Anomaly detection commands."""
     pass
 
 
@@ -24,7 +20,6 @@ def anomaly():
 @click.option('--db-path', default='data/evaluations.db', help='Path to evaluation database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def check_all(threshold, lookback_days, send_alerts, db_path, output_format):
-    """Check all metrics for anomalies."""
     try:
         print_info("Checking all metrics for anomalies...")
         agent = AnomalyAgent(db_path=db_path)
@@ -43,7 +38,6 @@ def check_all(threshold, lookback_days, send_alerts, db_path, output_format):
         else:
             print_success("No anomalies detected - all metrics are healthy")
         
-        # Display detailed results
         if output_format == 'json':
             print(format_output(results, format=output_format))
         else:
@@ -67,7 +61,6 @@ def check_all(threshold, lookback_days, send_alerts, db_path, output_format):
                         print(f"    Current Score: {details.get('current_score', 'N/A')}")
                         print(f"    Historical Avg: {details.get('historical_avg', 'N/A')}")
         
-        # Display statistics
         stats = agent.get_stats()
         print(f"\nStatistics:")
         print(format_output(stats, format=output_format))
@@ -88,7 +81,6 @@ def check_all(threshold, lookback_days, send_alerts, db_path, output_format):
 @click.option('--db-path', default='data/evaluations.db', help='Path to evaluation database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def check_agent(agent_type, threshold, lookback_days, send_alert, db_path, output_format):
-    """Check a specific agent for anomalies."""
     try:
         print_info(f"Checking {agent_type} for anomalies...")
         agent = AnomalyAgent(db_path=db_path)
@@ -120,7 +112,6 @@ def check_agent(agent_type, threshold, lookback_days, send_alert, db_path, outpu
 @click.option('--db-path', default='data/evaluations.db', help='Path to evaluation database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def stats(db_path, output_format):
-    """Show anomaly detection statistics."""
     try:
         agent = AnomalyAgent(db_path=db_path)
         stats = agent.get_stats()

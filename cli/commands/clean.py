@@ -1,6 +1,3 @@
-"""
-CLI commands for data cleaning.
-"""
 
 import click
 from pathlib import Path
@@ -16,7 +13,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def clean():
-    """Data cleaning commands."""
     pass
 
 
@@ -24,7 +20,6 @@ def clean():
 @click.option('--save/--no-save', default=True, help='Save cleaned data to files')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def all(save, output_format):
-    """Clean all raw data files."""
     try:
         print_info("Starting data cleaning for all raw files...")
         agent = CleanerAgent()
@@ -34,7 +29,6 @@ def all(save, output_format):
         if cleaned_data:
             print_success(f"Cleaned {len(cleaned_data)} files")
             
-            # Display statistics
             stats = agent.get_stats()
             print(f"\nCleaning Statistics:")
             print(format_output(stats, format=output_format))
@@ -52,18 +46,15 @@ def all(save, output_format):
 @click.option('--save/--no-save', default=True, help='Save cleaned data to file')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def file(filepath, save, output_format):
-    """Clean a specific raw data file."""
     try:
         print_info(f"Cleaning data from {filepath.name}...")
         agent = CleanerAgent()
         
-        # Load raw data
         raw_data = load_json_file(filepath)
         if not raw_data:
             print_error(f"Failed to load data from {filepath}")
             raise click.Abort()
         
-        # Clean the data
         cleaned_data = agent.cleaner.clean_data(raw_data)
         
         if cleaned_data:
@@ -84,7 +75,6 @@ def file(filepath, save, output_format):
 @clean.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def stats(output_format):
-    """Show cleaning statistics."""
     try:
         agent = CleanerAgent()
         stats = agent.get_stats()
@@ -101,7 +91,6 @@ def stats(output_format):
 @clean.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def list_files(output_format):
-    """List all raw data files available for cleaning."""
     try:
         raw_files = list(RAW_DATA_DIR.glob("*.json"))
         raw_files = [f for f in raw_files if not f.name.startswith("all_coins")]

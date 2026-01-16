@@ -1,21 +1,7 @@
-"""
-Script to view product analytics metrics.
-
-INTERVIEW EXPLANATION:
-This script demonstrates how to use the analytics system:
-- Calculate DAU (Daily Active Users)
-- View conversion rates
-- Analyze funnel
-- Calculate retention
-
-Usage:
-    python scripts/view_analytics.py
-"""
 
 import sys
 from pathlib import Path
 
-# Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -25,7 +11,6 @@ import json
 
 
 def main():
-    """Display analytics metrics."""
     print("=" * 60)
     print("DonutAI Product Analytics Dashboard")
     print("=" * 60)
@@ -33,23 +18,16 @@ def main():
     calculator = MetricsCalculator()
     
     try:
-        # ============================================================
-        # DAU (Daily Active Users)
-        # ============================================================
         print("\n📊 DAU (Daily Active Users)")
         print("-" * 60)
         current_dau = calculator.calculate_dau()
         print(f"Today's DAU: {current_dau}")
         
-        # Get last 7 days
         dau_timeseries = calculator.get_dau_timeseries(7)
         print("\nLast 7 days:")
         for day in dau_timeseries:
             print(f"  {day['date']}: {day['dau']} active sessions")
         
-        # ============================================================
-        # CONVERSION RATES
-        # ============================================================
         print("\n📈 Conversion Rates (Last 30 days)")
         print("-" * 60)
         
@@ -75,9 +53,6 @@ def main():
         print(f"Cleaning → Labeling: {cleaning_to_labeling}%")
         print(f"Labeling → Evaluation: {labeling_to_evaluation}%")
         
-        # ============================================================
-        # FUNNEL ANALYSIS
-        # ============================================================
         print("\n🔄 Pipeline Funnel (Last 30 days)")
         print("-" * 60)
         
@@ -89,9 +64,6 @@ def main():
             if data['dropoff_rate'] > 0:
                 print(f"  Drop-off rate: {data['dropoff_rate']}%")
         
-        # ============================================================
-        # FEATURE USAGE
-        # ============================================================
         print("\n⚙️  Feature Usage (Last 30 days)")
         print("-" * 60)
         
@@ -101,13 +73,9 @@ def main():
         print(f"Completion rate: {usage['completion_rate']}%")
         print(f"Average completion time: {usage['avg_completion_hours']:.2f} hours")
         
-        # ============================================================
-        # RETENTION (Example for last week's cohort)
-        # ============================================================
         print("\n🔁 Retention Rates")
         print("-" * 60)
         
-        # Calculate retention for cohort from 7 days ago
         cohort_date = date.today() - timedelta(days=7)
         retention = calculator.calculate_retention(cohort_date, [1, 7, 30])
         
@@ -116,9 +84,6 @@ def main():
         print(f"  Day 7 retention: {retention.get('day_7', 0)}%")
         print(f"  Day 30 retention: {retention.get('day_30', 0)}%")
         
-        # ============================================================
-        # COMPLETE SUMMARY (JSON export)
-        # ============================================================
         print("\n📋 Complete Summary")
         print("-" * 60)
         

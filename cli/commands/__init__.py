@@ -1,4 +1,1 @@
-"""
-CLI command modules.
-"""
 

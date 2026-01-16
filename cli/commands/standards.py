@@ -1,6 +1,3 @@
-"""
-CLI commands for data standards and dictionary management.
-"""
 
 import click
 from pathlib import Path
@@ -15,14 +12,12 @@ logger = setup_logger(__name__)
 
 @click.group()
 def standards():
-    """Data standards and dictionary commands."""
     pass
 
 
 @standards.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def show(output_format):
-    """Show data dictionary and standards."""
     try:
         dictionary = DataDictionary()
         
@@ -62,7 +57,6 @@ def show(output_format):
 @click.argument('field_name')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def field(field_name, output_format):
-    """Show details for a specific field."""
     try:
         dictionary = DataDictionary()
         
@@ -103,7 +97,6 @@ def field(field_name, output_format):
               help='Output file path (default: data_dictionary.json)')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def export(output_file, output_format):
-    """Export data dictionary to JSON file."""
     try:
         dictionary = DataDictionary()
         
@@ -133,16 +126,13 @@ def export(output_file, output_format):
 @click.argument('filepath', type=click.Path(exists=True, path_type=Path))
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def validate(filepath, output_format):
-    """Validate data file against data dictionary."""
     try:
         import json
         dictionary = DataDictionary()
         
-        # Load data file
         with open(filepath, 'r') as f:
             data = json.load(f)
         
-        # Validate
         errors = dictionary.validate_data(data)
         
         total_errors = sum(len(err_list) for err_list in errors.values())

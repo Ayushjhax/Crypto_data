@@ -1,20 +1,7 @@
-"""
-Script to generate data quality reports for all collected data.
-
-INTERVIEW EXPLANATION:
-This script demonstrates:
-- Batch processing of data files
-- Automated report generation
-- Integration of data standards and quality reporting
-
-Usage:
-    python scripts/generate_quality_reports.py
-"""
 
 import sys
 from pathlib import Path
 
-# Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -28,16 +15,13 @@ logger = setup_logger(__name__)
 
 
 def main():
-    """Generate quality reports for all labeled data files."""
     logger.info("=" * 60)
     logger.info("DonutAI - Data Quality Report Generator")
     logger.info("=" * 60)
     
-    # Initialize components
     dictionary = DataDictionary()
     reporter = DataQualityReporter(dictionary)
     
-    # Find all labeled data files
     labeled_files = list(LABELED_DATA_DIR.glob("*.json"))
     
     if not labeled_files:
@@ -54,22 +38,18 @@ def main():
     
     for file_path in labeled_files:
         try:
-            # Load data
             with open(file_path, "r") as f:
                 data = json.load(f)
             
-            # Handle both single records and lists
             if isinstance(data, list):
                 records = data
             else:
                 records = [data]
             
-            # Generate report for each record
             for record in records:
                 all_data.append(record)
                 report = reporter.generate_report(record, report_type="full")
                 
-                # Save report
                 reporter.save_report(report, format="json")
                 reporter.save_report(report, format="markdown")
                 
@@ -89,14 +69,12 @@ def main():
             logger.error(f"Error processing {file_path}: {e}")
             print(f"  ❌ Error processing {file_path.name}: {e}")
     
-    # Generate batch summary report
     if reports_generated > 0:
         logger.info("\nGenerating batch summary report...")
         print("\n📈 Generating batch summary report...")
         
         batch_report = reporter.generate_batch_report(all_data)
         
-        # Save batch report
         timestamp = batch_report['report_metadata']['generated_at'].replace(':', '-').split('.')[0]
         batch_json_path = QUALITY_REPORTS_DIR / f"batch_summary_{timestamp}.json"
         batch_md_path = QUALITY_REPORTS_DIR / f"batch_summary_{timestamp}.md"
@@ -104,7 +82,6 @@ def main():
         with open(batch_json_path, "w") as f:
             json.dump(batch_report, f, indent=2)
         
-        # Create markdown summary
         md_lines = [
             "# Batch Quality Summary Report",
             "",
@@ -135,7 +112,6 @@ def main():
         logger.info(f"Saved batch report to {batch_json_path}")
         print(f"  ✅ Batch summary saved")
         
-        # Export data dictionary
         logger.info("Exporting data dictionary...")
         print("\n📚 Exporting data dictionary...")
         
@@ -146,7 +122,6 @@ def main():
         logger.info(f"Data dictionary exported to: {dict_path}")
         print(f"  ✅ Data dictionary saved")
         
-        # Summary
         print("\n" + "=" * 60)
         print("QUALITY REPORTS GENERATED")
         print("=" * 60)

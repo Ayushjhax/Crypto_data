@@ -1,6 +1,3 @@
-"""
-CLI commands for data collection.
-"""
 
 import click
 from pathlib import Path
@@ -15,7 +12,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def collect():
-    """Data collection commands."""
     pass
 
 
@@ -24,13 +20,11 @@ def collect():
 @click.option('--save/--no-save', default=True, help='Save collected data to files')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def all(symbol, save, output_format):
-    """Collect data for all configured coins."""
     try:
         print_info("Starting data collection...")
         agent = CollectorAgent()
         
         if symbol:
-            # Collect specific symbols
             collected_data = []
             for sym in symbol:
                 print_info(f"Collecting data for {sym}...")
@@ -47,10 +41,8 @@ def all(symbol, save, output_format):
                     print_error(f"Error collecting {sym}: {e}")
                     logger.error(f"Error collecting {sym}: {e}", exc_info=True)
         else:
-            # Collect all configured coins
             collected_data = agent.collect_all(save_to_file=save)
         
-        # Display statistics
         stats = agent.get_stats()
         print_success(f"Collection complete!")
         print(f"\nStatistics:")
@@ -69,7 +61,6 @@ def all(symbol, save, output_format):
 @click.option('--save/--no-save', default=True, help='Save collected data to file')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def coin(symbol, save, output_format):
-    """Collect data for a specific coin symbol."""
     try:
         print_info(f"Collecting data for {symbol}...")
         agent = CollectorAgent()
@@ -96,7 +87,6 @@ def coin(symbol, save, output_format):
 @collect.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def list_coins(output_format):
-    """List all configured coins to collect."""
     try:
         agent = CollectorAgent()
         coins = agent.get_coins_to_collect()
@@ -113,7 +103,6 @@ def list_coins(output_format):
 @collect.command()
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def stats(output_format):
-    """Show collection statistics."""
     try:
         agent = CollectorAgent()
         stats = agent.get_stats()

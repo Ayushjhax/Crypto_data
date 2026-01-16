@@ -1,6 +1,3 @@
-"""
-CLI commands for data evaluation (critic agent).
-"""
 
 import click
 from pathlib import Path
@@ -15,7 +12,6 @@ logger = setup_logger(__name__)
 
 @click.group()
 def evaluate():
-    """Data evaluation commands (critic agent)."""
     pass
 
 
@@ -23,7 +19,6 @@ def evaluate():
 @click.option('--db-path', default='data/evaluations.db', help='Path to evaluation database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def all(db_path, output_format):
-    """Evaluate all pipeline outputs (collector, cleaner, labeler)."""
     try:
         print_info("Starting evaluation of all pipeline outputs...")
         agent = EvaluatorAgent(db_path=db_path)
@@ -41,7 +36,6 @@ def all(db_path, output_format):
         print(f"  - Labeler evaluations: {labeler_evals}")
         print(f"  - Run ID: {results.get('run_id', 'N/A')}")
         
-        # Display statistics
         stats = agent.get_stats()
         print(f"\nEvaluation Statistics:")
         print(format_output(stats, format=output_format))
@@ -61,18 +55,15 @@ def all(db_path, output_format):
 @click.option('--db-path', default='data/evaluations.db', help='Path to evaluation database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def file(filepath, agent_type, db_path, output_format):
-    """Evaluate a specific data file."""
     try:
         print_info(f"Evaluating {agent_type} data from {filepath.name}...")
         agent = EvaluatorAgent(db_path=db_path)
         
-        # Load data
         data = load_json_file(filepath)
         if not data:
             print_error(f"Failed to load data from {filepath}")
             raise click.Abort()
         
-        # Evaluate based on agent type
         if agent_type == 'collector':
             result = agent.evaluate_collector_output(data, str(filepath))
         elif agent_type == 'cleaner':
@@ -102,7 +93,6 @@ def file(filepath, agent_type, db_path, output_format):
 @click.option('--db-path', default='data/evaluations.db', help='Path to evaluation database')
 @click.option('--output-format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 def stats(db_path, output_format):
-    """Show evaluation statistics."""
     try:
         agent = EvaluatorAgent(db_path=db_path)
         stats = agent.get_stats()
