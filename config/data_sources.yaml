@@ -1,9 +1,4 @@
 # Data Sources Configuration
-# INTERVIEW EXPLANATION: YAML files are great for configuration because:
-# 1. Human-readable and easy to edit
-# 2. Supports nested structures
-# 3. No code changes needed to modify data sources
-# 4. Version control friendly
 
 data_sources:
   freecryptoapi:
