@@ -1,0 +1,25 @@
+{
+  "symbol": "BNB",
+  "timestamp": "2026-01-17T01:16:52.073769",
+  "price": 931.28,
+  "lowest_24h": 924.26,
+  "highest_24h": 938.42,
+  "price_change_24h": 0.64845236036659,
+  "source_exchange": "binance",
+  "date": "2026-01-16 22:46:51",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "BNB",
+        "last": "931.28",
+        "last_btc": "0.0098078368331834",
+        "lowest": "924.26",
+        "highest": "938.42",
+        "date": "2026-01-16 22:46:51",
+        "daily_change_percentage": "0.64845236036659",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}

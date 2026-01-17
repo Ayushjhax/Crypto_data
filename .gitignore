@@ -28,9 +28,7 @@ wheels/
 .env.local
 
 # Data files
-data/raw/*
-data/cleaned/*
-data/labeled/*
+
 data/quality_reports/*
 !data/raw/.gitkeep
 !data/cleaned/.gitkeep

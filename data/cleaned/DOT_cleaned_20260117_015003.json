@@ -1,0 +1,27 @@
+{
+  "symbol": "DOT",
+  "timestamp": "2026-01-06T01:56:06.250842",
+  "price": 2.209,
+  "lowest_24h": 2.097,
+  "highest_24h": 2.22,
+  "price_change_24h": 3.2242990654206,
+  "source_exchange": "binance",
+  "date": "2026-01-05 23:26:04",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "DOT",
+        "last": "2.209",
+        "last_btc": "0.000023373217699567",
+        "lowest": "2.097",
+        "highest": "2.22",
+        "date": "2026-01-05 23:26:04",
+        "daily_change_percentage": "3.2242990654206",
+        "source_exchange": "binance"
+      }
+    ]
+  },
+  "cleaned_at": "2026-01-17T01:50:03.172000",
+  "cleaning_version": "1.0"
+}

@@ -1,0 +1,202 @@
+[
+  {
+    "symbol": "BTC",
+    "timestamp": "2026-01-17T01:16:48.811784",
+    "price": 94952.64,
+    "lowest_24h": 94339.85,
+    "highest_24h": 95845.4,
+    "price_change_24h": -0.29434140179423,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:47",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "BTC",
+          "last": "94952.64",
+          "last_btc": "1",
+          "lowest": "94339.85",
+          "highest": "95845.4",
+          "date": "2026-01-16 22:46:47",
+          "daily_change_percentage": "-0.29434140179423",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "ETH",
+    "timestamp": "2026-01-17T01:16:50.427552",
+    "price": 3273.13,
+    "lowest_24h": 3256.77,
+    "highest_24h": 3326.05,
+    "price_change_24h": -0.42166237195731,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:49",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "ETH",
+          "last": "3273.13",
+          "last_btc": "0.034471184792756",
+          "lowest": "3256.77",
+          "highest": "3326.05",
+          "date": "2026-01-16 22:46:49",
+          "daily_change_percentage": "-0.42166237195731",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "BNB",
+    "timestamp": "2026-01-17T01:16:52.073769",
+    "price": 931.28,
+    "lowest_24h": 924.26,
+    "highest_24h": 938.42,
+    "price_change_24h": 0.64845236036659,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:51",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "BNB",
+          "last": "931.28",
+          "last_btc": "0.0098078368331834",
+          "lowest": "924.26",
+          "highest": "938.42",
+          "date": "2026-01-16 22:46:51",
+          "daily_change_percentage": "0.64845236036659",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "SOL",
+    "timestamp": "2026-01-17T01:16:53.731487",
+    "price": 144.1,
+    "lowest_24h": 140.43,
+    "highest_24h": 144.46,
+    "price_change_24h": 1.9022699950499,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:51",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "SOL",
+          "last": "144.1",
+          "last_btc": "0.001517598668136",
+          "lowest": "140.43",
+          "highest": "144.46",
+          "date": "2026-01-16 22:46:51",
+          "daily_change_percentage": "1.9022699950499",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "ADA",
+    "timestamp": "2026-01-17T01:16:55.342885",
+    "price": 0.3868,
+    "lowest_24h": 0.3806,
+    "highest_24h": 0.3944,
+    "price_change_24h": -0.922131147541,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:53",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "ADA",
+          "last": "0.3868",
+          "last_btc": "0.0000040736097490286",
+          "lowest": "0.3806",
+          "highest": "0.3944",
+          "date": "2026-01-16 22:46:53",
+          "daily_change_percentage": "-0.922131147541",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "XRP",
+    "timestamp": "2026-01-17T01:16:56.959751",
+    "price": 2.0548,
+    "lowest_24h": 2.0279,
+    "highest_24h": 2.0862,
+    "price_change_24h": -0.31049873859886,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:55",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "XRP",
+          "last": "2.0548",
+          "last_btc": "0.000021640259645202",
+          "lowest": "2.0279",
+          "highest": "2.0862",
+          "date": "2026-01-16 22:46:55",
+          "daily_change_percentage": "-0.31049873859886",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "DOGE",
+    "timestamp": "2026-01-17T01:16:58.599854",
+    "price": 0.13712,
+    "lowest_24h": 0.1353,
+    "highest_24h": 0.14043,
+    "price_change_24h": -1.4730186103327,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:57",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "DOGE",
+          "last": "0.13712",
+          "last_btc": "0.0000014440881850059",
+          "lowest": "0.1353",
+          "highest": "0.14043",
+          "date": "2026-01-16 22:46:57",
+          "daily_change_percentage": "-1.4730186103327",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "DOT",
+    "timestamp": "2026-01-17T01:17:00.214260",
+    "price": 2.09,
+    "lowest_24h": 2.058,
+    "highest_24h": 2.154,
+    "price_change_24h": -0.66539923954374,
+    "source_exchange": "binance",
+    "date": "2026-01-16 22:46:59",
+    "raw_data": {
+      "status": "success",
+      "symbols": [
+        {
+          "symbol": "DOT",
+          "last": "2.09",
+          "last_btc": "0.000022010973049301",
+          "lowest": "2.058",
+          "highest": "2.154",
+          "date": "2026-01-16 22:46:59",
+          "daily_change_percentage": "-0.66539923954374",
+          "source_exchange": "binance"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "symbol": "SOL",
+  "timestamp": "2026-01-06T01:55:59.700178",
+  "price": 139.12,
+  "lowest_24h": 133.3,
+  "highest_24h": 139.14,
+  "price_change_24h": 3.8054021787793,
+  "source_exchange": "binance",
+  "date": "2026-01-05 23:25:58",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "SOL",
+        "last": "139.12",
+        "last_btc": "0.0014712638232385",
+        "lowest": "133.3",
+        "highest": "139.14",
+        "date": "2026-01-05 23:25:58",
+        "daily_change_percentage": "3.8054021787793",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}

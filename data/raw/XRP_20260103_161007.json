@@ -1,0 +1,25 @@
+{
+  "symbol": "XRP",
+  "timestamp": "2026-01-03T16:10:07.347182",
+  "price": 2.0103,
+  "lowest_24h": 1.9808,
+  "highest_24h": 2.0559,
+  "price_change_24h": 1.5354310823779,
+  "source_exchange": "binance",
+  "date": "2026-01-03 13:40:06",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "XRP",
+        "last": "2.0103",
+        "last_btc": "0.000022370540636421",
+        "lowest": "1.9808",
+        "highest": "2.0559",
+        "date": "2026-01-03 13:40:06",
+        "daily_change_percentage": "1.5354310823779",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}

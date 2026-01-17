@@ -1,0 +1,25 @@
+{
+  "symbol": "DOGE",
+  "timestamp": "2026-01-17T01:16:58.599854",
+  "price": 0.13712,
+  "lowest_24h": 0.1353,
+  "highest_24h": 0.14043,
+  "price_change_24h": -1.4730186103327,
+  "source_exchange": "binance",
+  "date": "2026-01-16 22:46:57",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "DOGE",
+        "last": "0.13712",
+        "last_btc": "0.0000014440881850059",
+        "lowest": "0.1353",
+        "highest": "0.14043",
+        "date": "2026-01-16 22:46:57",
+        "daily_change_percentage": "-1.4730186103327",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}

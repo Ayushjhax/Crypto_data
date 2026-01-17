@@ -1,0 +1,25 @@
+{
+  "symbol": "BTC",
+  "timestamp": "2026-01-17T01:04:28.374152",
+  "price": 94980.04,
+  "lowest_24h": 94339.85,
+  "highest_24h": 95845.4,
+  "price_change_24h": -0.26556984741101,
+  "source_exchange": "binance",
+  "date": "2026-01-16 22:34:26",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "BTC",
+        "last": "94980.04",
+        "last_btc": "1",
+        "lowest": "94339.85",
+        "highest": "95845.4",
+        "date": "2026-01-16 22:34:26",
+        "daily_change_percentage": "-0.26556984741101",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "symbol": "ETH",
+  "timestamp": "2026-01-06T01:52:21.897017",
+  "price": 3232.51,
+  "lowest_24h": 3134.68,
+  "highest_24h": 3240.35,
+  "price_change_24h": 2.8937484084543,
+  "source_exchange": "binance",
+  "date": "2026-01-05 23:22:20",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "ETH",
+        "last": "3232.51",
+        "last_btc": "0.034268831552543",
+        "lowest": "3134.68",
+        "highest": "3240.35",
+        "date": "2026-01-05 23:22:20",
+        "daily_change_percentage": "2.8937484084543",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "symbol": "ADA",
+  "timestamp": "2026-01-17T01:16:55.342885",
+  "price": 0.3868,
+  "lowest_24h": 0.3806,
+  "highest_24h": 0.3944,
+  "price_change_24h": -0.922131147541,
+  "source_exchange": "binance",
+  "date": "2026-01-16 22:46:53",
+  "raw_data": {
+    "status": "success",
+    "symbols": [
+      {
+        "symbol": "ADA",
+        "last": "0.3868",
+        "last_btc": "0.0000040736097490286",
+        "lowest": "0.3806",
+        "highest": "0.3944",
+        "date": "2026-01-16 22:46:53",
+        "daily_change_percentage": "-0.922131147541",
+        "source_exchange": "binance"
+      }
+    ]
+  }
+}
